@@ -3,7 +3,8 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import { prisma } from "./lib/prisma"; // since we set up the prisma client in the lib folder, we can import it her elike this.
+import { prisma } from "./lib/prisma";
+// import { requireAuth, optionalAuth } from "./middleware/auth"; // Commented out until Clerk is installed
 
 // load environment variables
 dotenv.config();
@@ -40,6 +41,26 @@ app.get("/api/health", async (_req, res) => {
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }
+});
+
+// Public endpoint
+app.get("/api/users", async (_req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// Test protected endpoint (we'll add proper ones later)
+app.get("/api/protected", (req, res) => {
+  // For now, just return a simple response
+  // We'll add proper auth later once packages are installed
+  res.json({
+    message: "This will be a protected route!",
+    note: "Install Clerk packages first",
+  });
 });
 
 app.listen(PORT, () =>
