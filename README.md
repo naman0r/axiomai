@@ -14,7 +14,9 @@ Backend: Express.js + TypeScript
 Frontend: Next.js + TypeScript + Tailwind
 Validation: Zod
 State Management: React Query + Zustand
-Testing: Vitest
+Testing: Jest
+
+- backend only approach (traditional): frontend remains 'dumb'
 
 - I wanted to redesign the infrastructure of EduGenie and rebrand it to be a more scalable project, and focus a lot on design rather than just stringing everything together. Here is what I want to do:
 

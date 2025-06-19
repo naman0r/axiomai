@@ -21,4 +21,8 @@ npm run dev
 
 - add testing capabilities (jest? how do you unit test an api? )
 - figure out ORM with prisma or drizzle
--
+- make a Supabase project
+
+##
+
+- running `npx prisma init` made the prisma folder in the backend.
