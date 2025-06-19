@@ -17,11 +17,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Example model - you can modify this for your needs
+// User model compatible with Clerk
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id // This will be the Clerk user ID
   email     String   @unique
   name      String?
+  firstName String?
+  lastName  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
