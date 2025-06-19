@@ -1,5 +1,12 @@
 ## axiomai.space: resesign from EduGenie, why and how:
 
+## Immediate dev tools and what to work on:
+
+- excalidraw for infra visualization: https://excalidraw.com/#room=56c1847c91cd2396fc4f,5RTMmRWJ8iYx9fSfrJZI5g
+-
+
+<hr/>
+
 - I wanted to redesign the infrastructure of EduGenie and rebrand it to be a more scalable project, and focus a lot on design rather than just stringing everything together. Here is what I want to do:
 
   1. Retain original UI/UX from EduGenie.
@@ -27,6 +34,6 @@ What to focus on:
 
 ## what the helly:
 
+**technologies to use**:
 
-**technologies to use**: 
 - Upstash (simple rate limiting instead of having to )
