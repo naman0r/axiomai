@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
     "@prisma/client": "^6.10.1",
     "@supabase/supabase-js": "^2.50.0",
     "cors": "^2.8.5",
