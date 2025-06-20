@@ -1,0 +1,15 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[env]
+NODE_ENV = "production"
+
+# Nixpacks configuration for Node.js with Prisma
+[nixpacks]
+cmds = ["npm ci", "npx prisma generate", "npm run build"] 
