@@ -4,7 +4,8 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
-  "/profile(.*)",
+  // "/profile(.*)",  // Removed - profile page handles its own auth state
+  "/(protected)(.*)", // This protects all routes in (protected) folder
   // Add other protected routes here
 ]);
 

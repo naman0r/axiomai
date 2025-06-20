@@ -16,7 +16,10 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? process.env.CORS_ORIGIN
+        : "http://localhost:3000",
     credentials: true,
   })
 );
@@ -97,6 +100,48 @@ app.get("/api/users", async (_req, res) => {
   }
 });
 
+// Create/sync user endpoint
+app.post("/api/users/sync", async (req, res) => {
+  try {
+    const { id, email, firstName, lastName, name } = req.body;
+
+    if (!id || !email) {
+      res.status(400).json({ error: "User ID and email are required" });
+      return;
+    }
+
+    // Upsert user (create if not exists, update if exists)
+    const user = await prisma.user.upsert({
+      where: { id },
+      update: {
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        name: name || null,
+      },
+      create: {
+        id,
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        name: name || null,
+      },
+    });
+
+    res.json({
+      message: "User synced successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to sync user:", error);
+    res.status(500).json({ error: "Failed to sync user" });
+  }
+});
+
 // Test protected endpoint (we'll add proper ones later)
 app.get("/api/protected", (req, res) => {
   // For now, just return a simple response
@@ -105,6 +150,10 @@ app.get("/api/protected", (req, res) => {
     message: "This will be a protected route!",
     note: "Install Clerk packages first",
   });
+});
+
+app.post("/api/users", async (req, res) => {
+  const {} = req.body;
 });
 
 app.listen(PORT, () =>

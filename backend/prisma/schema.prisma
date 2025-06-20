@@ -24,6 +24,9 @@ model User {
   name      String?
   firstName String?
   lastName  String?
+  academicYear Int? 
+  school String? 
+  credits   Int      @default(20)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
