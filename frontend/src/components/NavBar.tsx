@@ -5,10 +5,11 @@ import { Menu, MenuItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 function NavBar({ className }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
-  const { isSignedIn } = useUser();
+  const { user, isSignedIn } = useUser();
 
   // const displayError = loginError || authError;
 
@@ -42,11 +43,14 @@ function NavBar({ className }: { className?: string }) {
                   item="Dashboard"
                 />
               </Link>
-              <Link href="/hello">
-                <MenuItem
-                  setActive={setActive}
-                  active={active}
-                  item="Profile"
+
+              <Link href="/profile">
+                <Image
+                  width={42}
+                  height={42}
+                  src={user?.imageUrl}
+                  alt="User Profile"
+                  className="rounded-full border-2 border-violet-900 hover:border-violet-950"
                 />
               </Link>
             </>

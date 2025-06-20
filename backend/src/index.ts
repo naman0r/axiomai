@@ -21,6 +21,50 @@ app.use(
   })
 );
 
+// Debug endpoint to check environment
+app.get("/api/debug", (_req, res) => {
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    port: process.env.PORT,
+    corsOrigin: process.env.CORS_ORIGIN,
+    databaseUrl: process.env.DATABASE_URL
+      ? "SET (hidden for security)"
+      : "NOT SET",
+    directUrl: process.env.DIRECT_URL ? "SET (hidden for security)" : "NOT SET",
+    supabaseUrl: process.env.SUPABASE_URL ? "SET" : "NOT SET",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Test basic network connectivity to Supabase
+app.get("/api/network-test", async (_req, res) => {
+  try {
+    const response = await fetch(
+      "https://zzczqcseofmpkijszepu.supabase.co/rest/v1/",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+          apikey: process.env.SUPABASE_ANON_KEY || "",
+        },
+      }
+    );
+
+    res.json({
+      status: "network_ok",
+      supabaseReachable: true,
+      statusCode: response.status,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "network_error",
+      supabaseReachable: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // example health-check
 /* app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
