@@ -1,5 +1,3 @@
-import Image from "next/image";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import HeroSection from "@/components/HeroSection";
 
 export default function Home() {

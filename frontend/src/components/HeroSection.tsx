@@ -15,23 +15,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// Simple Typewriter effect component
-const Typewriter = ({ text, speed = 50 }: { text: string; speed?: number }) => {
-  const [displayed, setDisplayed] = useState("");
-  useEffect(() => {
-    let idx = 0;
-    const interval = setInterval(() => {
-      setDisplayed((d) => d + text[idx]);
-      idx++;
-      if (idx >= text.length) {
-        clearInterval(interval);
-      }
-    }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
-  return <span>{displayed}</span>;
-};
-
 // RotatingTypewriter cycles through a list of prompts one at a time
 const RotatingTypewriter = ({
   prompts,

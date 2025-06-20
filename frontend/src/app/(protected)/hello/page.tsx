@@ -2,8 +2,8 @@
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 
-const page = () => {
-  const { user, isLoaded, isSignedIn } = useUser();
+const Page = () => {
+  const { user } = useUser();
   return (
     <>
       <p>Hello</p>
@@ -13,4 +13,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

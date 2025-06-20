@@ -4,14 +4,11 @@ import React, { useState } from "react";
 import { Menu, MenuItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-import { usePathname } from "next/navigation";
-import { ChevronsUp } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 function NavBar({ className }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   // const displayError = loginError || authError;
 
@@ -55,20 +52,20 @@ function NavBar({ className }: { className?: string }) {
             </>
           ) : (
             <>
-              <a href="/sign-in" className="cursor-pointer">
+              <Link href="/sign-in">
                 <MenuItem
                   setActive={setActive}
                   active={active}
                   item="Sign In"
                 />
-              </a>
-              <a href="/sign-in" className="cursor-pointer">
+              </Link>
+              <Link href="/sign-up">
                 <MenuItem
                   setActive={setActive}
                   active={active}
-                  item="Sign In"
+                  item="Sign Up"
                 />
-              </a>
+              </Link>
             </>
           )}
           {/* <Link href="/about">
