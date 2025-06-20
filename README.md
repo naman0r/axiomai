@@ -48,3 +48,5 @@ What to focus on:
 **technologies to use**:
 
 - Upstash (simple rate limiting instead of having to )
+- openrouter (AI API marketplace)
+-
