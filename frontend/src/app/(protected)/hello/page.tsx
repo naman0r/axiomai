@@ -1,11 +1,9 @@
 "use client";
 import React from "react";
-import { useUser, useAuth, useClerk } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 const Page = () => {
-  const { user } = useUser();
-  const { signOut, isSignedIn, isLoaded } = useAuth();
-  const { userId } = useAuth();
+  const { isLoaded, userId } = useAuth();
 
   if (!isLoaded) {
     return <div>Loading...</div>;

@@ -9,6 +9,14 @@ interface CreateUserPayload {
   name?: string;
 }
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 interface ApiResponse<T> {
   data?: T;
   error?: string;
@@ -17,7 +25,7 @@ interface ApiResponse<T> {
 class UserService {
   private baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-  async createUser(userData: CreateUserPayload): Promise<ApiResponse<any>> {
+  async createUser(userData: CreateUserPayload): Promise<ApiResponse<User>> {
     try {
       const response = await fetch(`${this.baseUrl}/api/users`, {
         method: "POST",
@@ -41,7 +49,7 @@ class UserService {
     }
   }
 
-  async syncUser(userData: CreateUserPayload): Promise<ApiResponse<any>> {
+  async syncUser(userData: CreateUserPayload): Promise<ApiResponse<User>> {
     try {
       const response = await fetch(`${this.baseUrl}/api/users/sync`, {
         method: "POST",

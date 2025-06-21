@@ -46,7 +46,7 @@ export function useUserSync() {
     if (isLoaded && user && !syncState.isSuccess && !syncState.isLoading) {
       syncUserToDatabase();
     }
-  }, [isLoaded, user]);
+  }, [isLoaded, user, syncState.isSuccess, syncState.isLoading]);
 
   return {
     ...syncState,

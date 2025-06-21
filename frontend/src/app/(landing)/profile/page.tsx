@@ -1,5 +1,5 @@
 "use client";
-import { useUser, useAuth, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { useUserSync } from "@/hooks/useUserSync";
 
 import React from "react";
