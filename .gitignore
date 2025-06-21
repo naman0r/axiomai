@@ -5,3 +5,4 @@ frontend/package-lock.json
 frontend/.env
 backend/.env
 backend/dist
+frontend/.clerk
