@@ -16,11 +16,10 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? process.env.CORS_ORIGIN
-        : "http://localhost:3000",
-    credentials: true,
+    origin: ["http://localhost:3000", "https://axiomai.space"], // Allowed origins
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+    credentials: true, // Allow cookies/auth headers
   })
 );
 
