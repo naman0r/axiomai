@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { userService, type CreateUserPayload } from "@/services/userService";
 
 interface UserSyncState {
@@ -18,7 +18,7 @@ export function useUserSync() {
     isSuccess: false,
   });
 
-  const syncUserToDatabase = async () => {
+  const syncUserToDatabase = useCallback(async () => {
     if (!user) return;
 
     setSyncState({ isLoading: true, error: null, isSuccess: false });
@@ -39,14 +39,20 @@ export function useUserSync() {
       setSyncState({ isLoading: false, error: null, isSuccess: true });
       console.log("User synced successfully:", result.data);
     }
-  };
+  }, [user]);
 
   // Auto-sync when user signs in
   useEffect(() => {
     if (isLoaded && user && !syncState.isSuccess && !syncState.isLoading) {
       syncUserToDatabase();
     }
-  }, [isLoaded, user, syncState.isSuccess, syncState.isLoading]);
+  }, [
+    isLoaded,
+    user,
+    syncState.isSuccess,
+    syncState.isLoading,
+    syncUserToDatabase,
+  ]);
 
   return {
     ...syncState,

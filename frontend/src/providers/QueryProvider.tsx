@@ -12,6 +12,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
           queries: {
             staleTime: 5 * 60 * 1000, // 5 minutes
             gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             retry: (failureCount, error: any) => {
               // Don't retry on 4xx errors except 429 (rate limit)
               if (

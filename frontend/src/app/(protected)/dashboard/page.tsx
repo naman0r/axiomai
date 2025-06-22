@@ -20,7 +20,6 @@ const Resources = () => {
   // Simple React state for UI management
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
   // Hooks for CRUD operations
   const { data: courses, isLoading, error } = useCourses(userId || "");

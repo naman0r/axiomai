@@ -1,13 +1,17 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { ApiResponse } from "../types/api";
 
-export interface RequestConfig extends AxiosRequestConfig {}
-
 export interface IApiClient {
-  get<T>(endpoint: string, config?: RequestConfig): Promise<T>;
-  post<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T>;
-  put<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T>;
-  delete<T>(endpoint: string, config?: RequestConfig): Promise<T>;
+  get<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T>;
+  post<T>(
+    endpoint: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  put<T>(endpoint: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+  delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T>;
 }
 
 class ApiClient implements IApiClient {
@@ -48,6 +52,7 @@ class ApiClient implements IApiClient {
 
     // Response interceptor for error handling and data extraction
     this.client.interceptors.response.use(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (response: AxiosResponse<ApiResponse<any>>) => {
         console.log(`API Response: ${response.status} ${response.config.url}`);
 
@@ -96,27 +101,29 @@ class ApiClient implements IApiClient {
     );
   }
 
-  async get<T>(endpoint: string, config?: RequestConfig): Promise<T> {
+  async get<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
     return this.client.get(endpoint, config);
   }
 
   async post<T>(
     endpoint: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any,
-    config?: RequestConfig
+    config?: AxiosRequestConfig
   ): Promise<T> {
     return this.client.post(endpoint, data, config);
   }
 
   async put<T>(
     endpoint: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any,
-    config?: RequestConfig
+    config?: AxiosRequestConfig
   ): Promise<T> {
     return this.client.put(endpoint, data, config);
   }
 
-  async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
+  async delete<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
     return this.client.delete(endpoint, config);
   }
 }

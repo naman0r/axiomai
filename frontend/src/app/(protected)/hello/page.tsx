@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
 import { useAuth } from "@clerk/nextjs";
-import { useCourses, useCreateCourse } from "@/hooks/useCourses";
+import { useCourses } from "@/hooks/useCourses";
 
 const Page = () => {
   const { isLoaded, userId } = useAuth();
-  const { data: courses, isLoading, error } = useCourses(userId || "");
+  const { data: courses } = useCourses(userId || "");
 
-  const createCourse = useCreateCourse(); // can call createCourse.mutate()
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
