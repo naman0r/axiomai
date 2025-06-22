@@ -6,7 +6,6 @@
 
 // what do I do in this file?????
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,16 +18,31 @@ datasource db {
 
 // User model compatible with Clerk
 model User {
-  id        String   @id // This will be the Clerk user ID
-  email     String   @unique
-  name      String?
-  firstName String?
-  lastName  String?
-  academicYear Int? 
-  school String? 
-  credits   Int      @default(20)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id // This will be the Clerk user ID
+  email        String   @unique
+  name         String?
+  firstName    String?
+  lastName     String?
+  academicYear Int?
+  school       String?
+  courses      Course[]
+  credits      Int      @default(20)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("users")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  code        String
+  instructor  String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("courses")
 }
