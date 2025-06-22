@@ -28,6 +28,8 @@ export default function RootLayout({
     //wrapping the entire application in the clerk auth provider.
     <ClerkProvider>
       <QueryProvider>
+        {" "}
+        {/*  this is a QueryClientPrivider, */}
         <html lang="en">
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -46,7 +46,7 @@ export function useCreateCourse() {
       return courseService.createCourse(data);
     },
 
-    onMutate: async (newCourse) => {
+    onMutate: async (newCourse: CreateCourseData) => {
       console.log("Optimistic update: Adding course to cache");
 
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
