@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import {
   useCourses,
   useCreateCourse,
@@ -13,7 +14,7 @@ import type {
   Course,
 } from "@/types/course";
 
-const Resources = () => {
+const Dashboard = () => {
   const { user } = useUser();
   const userId = user?.id;
 
@@ -23,7 +24,6 @@ const Resources = () => {
 
   // Hooks for CRUD operations
   const { data: courses, isLoading, error } = useCourses(userId || "");
-  // aliasing the `data` returned by the useCourses hook as courses
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
   const deleteCourse = useDeleteCourse();
@@ -39,7 +39,7 @@ const Resources = () => {
   // Simple handlers for modal management
   const openCreateModal = () => {
     setIsCreateModalOpen(true);
-    setEditingCourse(null); // Ensure edit is closed
+    setEditingCourse(null);
   };
 
   const closeCreateModal = () => {
@@ -49,7 +49,7 @@ const Resources = () => {
 
   const openEditModal = (course: Course) => {
     setEditingCourse(course);
-    setIsCreateModalOpen(false); // Ensure create is closed
+    setIsCreateModalOpen(false);
     setFormData({
       name: course.name,
       code: course.code,
@@ -80,7 +80,6 @@ const Resources = () => {
 
     try {
       await createCourse.mutateAsync({
-        // this is what is expected of type CreateCourseData...
         ...formData,
         userId,
       });
@@ -112,7 +111,9 @@ const Resources = () => {
     }
   };
 
-  const handleDelete = async (courseId: string) => {
+  const handleDelete = async (courseId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!userId) return;
 
     if (window.confirm("Are you sure you want to delete this course?")) {
@@ -126,7 +127,7 @@ const Resources = () => {
 
   if (!userId) {
     return (
-      <div className="p-8">
+      <div className="min-h-screen bg-black/[0.96] text-white flex justify-center items-center">
         <div>Please sign in to manage courses.</div>
       </div>
     );
@@ -134,253 +135,286 @@ const Resources = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse">Loading courses...</div>
+      <div className="min-h-screen bg-black/[0.96] text-white flex justify-center items-center">
+        <div>Loading courses...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-8">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error loading courses: {error.message}
-        </div>
+      <div className="min-h-screen bg-black/[0.96] text-red-500 flex flex-col justify-center items-center p-8">
+        <p>Error loading courses: {error.message}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black/[0.96] text-white pt-20 px-4 md:px-8 lg:px-16">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Course Management</h1>
+        <h1 className="text-3xl font-bold">Your Courses</h1>
         <button
           onClick={openCreateModal}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200 shadow-lg"
         >
-          Create New Course
+          + Add New Course
         </button>
       </div>
 
-      {/* Create Course Form */}
-      {isCreateModalOpen && (
-        <div className="mb-8 bg-gray-50 p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-4">Create New Course</h2>
-          <form onSubmit={handleCreateSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Course Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Course Code *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.code}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                placeholder="e.g., CS101, MATH201"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                rows={3}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Instructor *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.instructor}
-                onChange={(e) =>
-                  setFormData({ ...formData, instructor: e.target.value })
-                }
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={createCourse.isPending}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md transition-colors"
+      {courses?.length === 0 && !isLoading ? (
+        <div className="text-center py-10 px-6 bg-gray-800/40 rounded-lg shadow-md">
+          <h2 className="text-xl text-gray-300 mb-4">No courses added yet.</h2>
+          <p className="text-gray-400 mb-6">
+            Get started by adding your first course!
+          </p>
+          <button
+            onClick={openCreateModal}
+            className="px-6 py-3 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200 shadow-lg text-lg font-semibold"
+          >
+            Add Your First Course
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses?.map((course) => (
+            <Link href={`/classes/${course.id}`} key={course.id}>
+              <div
+                key={course.id}
+                className="bg-gray-800/70 p-5 h-full rounded-lg shadow-lg hover:shadow-indigo-500/30 transition-shadow duration-300 border border-transparent hover:border-indigo-600/50 cursor-pointer flex flex-col justify-between relative group"
               >
-                {createCourse.isPending ? "Creating..." : "Create Course"}
-              </button>
-              <button
-                type="button"
-                onClick={closeCreateModal}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+                <div>
+                  <h3
+                    className="text-xl font-semibold text-white mb-2 truncate"
+                    title={course.name}
+                  >
+                    {course.name}
+                  </h3>
+                  {course.code && (
+                    <p className="text-sm text-indigo-300 mb-1">
+                      Code: {course.code}
+                    </p>
+                  )}
+                  {course.instructor && (
+                    <p className="text-sm text-gray-400 mb-3">
+                      Instructor: {course.instructor}
+                    </p>
+                  )}
+                  {course.description && (
+                    <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                      {course.description}
+                    </p>
+                  )}
+                </div>
+                <div className="flex justify-between items-end">
+                  <p className="text-xs text-gray-500">
+                    Created: {new Date(course.createdAt).toLocaleDateString()}
+                  </p>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openEditModal(course);
+                      }}
+                      className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => handleDelete(course.id, e)}
+                      disabled={deleteCourse.isPending}
+                      className="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-xs rounded transition-colors"
+                    >
+                      {deleteCourse.isPending ? "..." : "Delete"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
 
-      {/* Courses List */}
-      <div className="space-y-4">
-        {courses?.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No courses found. Create your first course to get started!
+      {/* Create Course Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              Create New Course
+            </h2>
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Course Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                  placeholder="Enter course name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Course Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
+                  placeholder="e.g., CS101, MATH201"
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Instructor *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.instructor}
+                  onChange={(e) =>
+                    setFormData({ ...formData, instructor: e.target.value })
+                  }
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                  placeholder="Enter instructor name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  rows={3}
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                  placeholder="Enter course description"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={createCourse.isPending}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-4 py-2 rounded-md transition-colors font-medium"
+                >
+                  {createCourse.isPending ? "Creating..." : "Create Course"}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeCreateModal}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-        ) : (
-          courses?.map((course) => (
-            <div
-              key={course.id}
-              className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
-            >
-              {editingCourse?.id === course.id ? (
-                // Edit Form
-                <form onSubmit={handleUpdateSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Course Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Course Code *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.code}
-                      onChange={(e) =>
-                        setFormData({ ...formData, code: e.target.value })
-                      }
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      rows={3}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Instructor *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.instructor}
-                      onChange={(e) =>
-                        setFormData({ ...formData, instructor: e.target.value })
-                      }
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      disabled={updateCourse.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-md transition-colors"
-                    >
-                      {updateCourse.isPending ? "Updating..." : "Save Changes"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={closeEditModal}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                // Display Course
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {course.name}
-                      </h3>
-                      <p className="text-gray-600 mt-1">
-                        <span className="font-medium">{course.code}</span> •{" "}
-                        {course.instructor}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => openEditModal(course)}
-                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(course.id)}
-                        disabled={deleteCourse.isPending}
-                        className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1 rounded-md text-sm transition-colors"
-                      >
-                        {deleteCourse.isPending ? "Deleting..." : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-                  {course.description && (
-                    <p className="text-gray-700 mb-4">{course.description}</p>
-                  )}
-                  <div className="flex gap-4 text-sm text-gray-500">
-                    <span>
-                      Created: {new Date(course.createdAt).toLocaleDateString()}
-                    </span>
-                    <span>
-                      Updated: {new Date(course.updatedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Edit Course Modal */}
+      {editingCourse && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              Edit Course
+            </h2>
+            <form onSubmit={handleUpdateSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Course Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Course Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Instructor *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.instructor}
+                  onChange={(e) =>
+                    setFormData({ ...formData, instructor: e.target.value })
+                  }
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      description: e.target.value,
+                    })
+                  }
+                  rows={3}
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-white"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={updateCourse.isPending}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white px-4 py-2 rounded-md transition-colors font-medium"
+                >
+                  {updateCourse.isPending ? "Updating..." : "Save Changes"}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Resources;
+export default Dashboard;

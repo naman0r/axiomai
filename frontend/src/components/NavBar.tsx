@@ -36,7 +36,7 @@ function NavBar({ className }: { className?: string }) {
           </Link>
           {isSignedIn ? (
             <>
-              <Link href="/hello">
+              <Link href="/dashboard">
                 <MenuItem
                   setActive={setActive}
                   active={active}
