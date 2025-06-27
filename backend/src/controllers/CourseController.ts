@@ -4,11 +4,10 @@ import {
   NotFoundError,
   ConflictError,
 } from "../models/CourseModel";
-import { ICourseController } from "../interfaces/controllers/ICourseController";
-import { ICourseService } from "../interfaces/services/ICourseService";
+import { CourseService } from "../services/CourseService";
 
-export class CourseController implements ICourseController {
-  constructor(private courseService: ICourseService) {}
+export class CourseController {
+  constructor(private courseService: CourseService) {}
 
   async createCourse(req: Request, res: Response): Promise<void> {
     try {
@@ -19,7 +18,7 @@ export class CourseController implements ICourseController {
 
       res.status(201).json({
         success: true,
-        data: course.toJSON(),
+        data: course,
       });
     } catch (error) {
       this.handleError(error, res);
@@ -29,12 +28,11 @@ export class CourseController implements ICourseController {
   async getCourses(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.query.userId as string;
-
       const courses = await this.courseService.getUserCourses(userId);
 
       res.status(200).json({
         success: true,
-        data: courses.map((course) => course.toJSON()),
+        data: courses,
       });
     } catch (error) {
       this.handleError(error, res);
@@ -45,12 +43,11 @@ export class CourseController implements ICourseController {
     try {
       const userId = req.query.userId as string;
       const courseId = req.params.id;
-
       const course = await this.courseService.getCourseById(courseId, userId);
 
       res.status(200).json({
         success: true,
-        data: course.toJSON(),
+        data: course,
       });
     } catch (error) {
       this.handleError(error, res);
@@ -68,7 +65,7 @@ export class CourseController implements ICourseController {
 
       res.status(200).json({
         success: true,
-        data: course.toJSON(),
+        data: course,
       });
     } catch (error) {
       this.handleError(error, res);

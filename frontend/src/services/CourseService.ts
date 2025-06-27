@@ -1,13 +1,10 @@
 import { IApiClient } from "../lib/api-client";
-import { ICourseService } from "./interfaces/ICourseService";
 import { Course, CreateCourseData, UpdateCourseData } from "../types/course";
 
 /**
- * Course Service Implementation
- * Handles all course-related business logic and API communication
- * Implements the ICourseService interface
+ * Course Service - handles all course-related API communication
  */
-export class CourseService implements ICourseService {
+export class CourseService {
   constructor(private apiClient: IApiClient) {}
 
   /**
@@ -15,8 +12,6 @@ export class CourseService implements ICourseService {
    */
   async getCourses(userId: string): Promise<Course[]> {
     try {
-      console.log(`Fetching courses for user: ${userId}`);
-
       if (!userId?.trim()) {
         throw new Error("User ID is required to fetch courses");
       }
@@ -25,15 +20,12 @@ export class CourseService implements ICourseService {
         `/api/courses?userId=${userId}`
       );
 
-      console.log(`Successfully fetched ${courses.length} courses`);
       return courses;
     } catch (error) {
       console.error("Failed to fetch courses:", error);
-
       if (error instanceof Error) {
         throw new Error(`Failed to fetch courses: ${error.message}`);
       }
-
       throw new Error("Failed to fetch courses due to an unexpected error");
     }
   }
@@ -43,8 +35,6 @@ export class CourseService implements ICourseService {
    */
   async getCourseById(id: string, userId: string): Promise<Course> {
     try {
-      console.log(`Fetching course: ${id} for user: ${userId}`);
-
       if (!id?.trim() || !userId?.trim()) {
         throw new Error("Course ID and User ID are required");
       }
@@ -53,11 +43,9 @@ export class CourseService implements ICourseService {
         `/api/courses/${id}?userId=${userId}`
       );
 
-      console.log(`Successfully fetched course: ${course.name}`);
       return course;
     } catch (error) {
       console.error("Failed to fetch course:", error);
-
       if (error instanceof Error) {
         if (error.message.includes("404")) {
           throw new Error("Course not found");
@@ -67,7 +55,6 @@ export class CourseService implements ICourseService {
         }
         throw new Error(`Failed to fetch course: ${error.message}`);
       }
-
       throw new Error("Failed to fetch course due to an unexpected error");
     }
   }
@@ -77,20 +64,13 @@ export class CourseService implements ICourseService {
    */
   async createCourse(data: CreateCourseData): Promise<Course> {
     try {
-      console.log(`Creating course: ${data.name} (${data.code})`);
-
-      // Client-side validation
       this.validateCourseData(data);
 
       const course = await this.apiClient.post<Course>("/api/courses", data);
 
-      console.log(
-        `Successfully created course: ${course.name} with ID: ${course.id}`
-      );
       return course;
     } catch (error) {
       console.error("Failed to create course:", error);
-
       if (error instanceof Error) {
         if (
           error.message.includes("409") ||
@@ -105,7 +85,6 @@ export class CourseService implements ICourseService {
         }
         throw new Error(`Failed to create course: ${error.message}`);
       }
-
       throw new Error("Failed to create course due to an unexpected error");
     }
   }
@@ -115,17 +94,13 @@ export class CourseService implements ICourseService {
    */
   async updateCourse(id: string, data: UpdateCourseData): Promise<Course> {
     try {
-      console.log(`Updating course: ${id}`);
-
       if (!id?.trim()) {
         throw new Error("Course ID is required for update");
       }
-
       if (!data.userId?.trim()) {
         throw new Error("User ID is required for authorization");
       }
 
-      // Client-side validation for provided fields
       this.validateUpdateData(data);
 
       const course = await this.apiClient.put<Course>(
@@ -133,11 +108,9 @@ export class CourseService implements ICourseService {
         data
       );
 
-      console.log(`Successfully updated course: ${course.name}`);
       return course;
     } catch (error) {
       console.error("Failed to update course:", error);
-
       if (error instanceof Error) {
         if (error.message.includes("404")) {
           throw new Error("Course not found");
@@ -155,7 +128,6 @@ export class CourseService implements ICourseService {
         }
         throw new Error(`Failed to update course: ${error.message}`);
       }
-
       throw new Error("Failed to update course due to an unexpected error");
     }
   }
@@ -165,8 +137,6 @@ export class CourseService implements ICourseService {
    */
   async deleteCourse(id: string, userId: string): Promise<void> {
     try {
-      console.log(`Deleting course: ${id} for user: ${userId}`);
-
       if (!id?.trim() || !userId?.trim()) {
         throw new Error("Course ID and User ID are required for deletion");
       }
@@ -174,11 +144,8 @@ export class CourseService implements ICourseService {
       await this.apiClient.delete(`/api/courses/${id}`, {
         data: { userId },
       });
-
-      console.log(`Successfully deleted course: ${id}`);
     } catch (error) {
       console.error("Failed to delete course:", error);
-
       if (error instanceof Error) {
         if (error.message.includes("404")) {
           throw new Error("Course not found");
@@ -188,7 +155,6 @@ export class CourseService implements ICourseService {
         }
         throw new Error(`Failed to delete course: ${error.message}`);
       }
-
       throw new Error("Failed to delete course due to an unexpected error");
     }
   }
@@ -202,30 +168,14 @@ export class CourseService implements ICourseService {
     if (!data.name?.trim()) {
       errors.push("Course name is required");
     }
-
     if (!data.code?.trim()) {
       errors.push("Course code is required");
     }
-
     if (!data.instructor?.trim()) {
       errors.push("Instructor name is required");
     }
-
     if (!data.userId?.trim()) {
       errors.push("User ID is required");
-    }
-
-    // Additional validation rules
-    if (data.name && data.name.length > 100) {
-      errors.push("Course name must be less than 100 characters");
-    }
-
-    if (data.code && data.code.length > 20) {
-      errors.push("Course code must be less than 20 characters");
-    }
-
-    if (data.description && data.description.length > 500) {
-      errors.push("Description must be less than 500 characters");
     }
 
     if (errors.length > 0) {
@@ -242,26 +192,11 @@ export class CourseService implements ICourseService {
     if (data.name !== undefined && !data.name?.trim()) {
       errors.push("Course name cannot be empty");
     }
-
     if (data.code !== undefined && !data.code?.trim()) {
       errors.push("Course code cannot be empty");
     }
-
     if (data.instructor !== undefined && !data.instructor?.trim()) {
       errors.push("Instructor name cannot be empty");
-    }
-
-    // Length validations
-    if (data.name && data.name.length > 100) {
-      errors.push("Course name must be less than 100 characters");
-    }
-
-    if (data.code && data.code.length > 20) {
-      errors.push("Course code must be less than 20 characters");
-    }
-
-    if (data.description && data.description.length > 500) {
-      errors.push("Description must be less than 500 characters");
     }
 
     if (errors.length > 0) {

@@ -1,10 +1,6 @@
 import { Router } from "express";
-import { CourseRepository } from "../repositories/CourseRepository";
 import { CourseService } from "../services/CourseService";
 import { CourseController } from "../controllers/CourseController";
-import { ICourseRepository } from "../interfaces/repositories/ICourseRepository";
-import { ICourseService } from "../interfaces/services/ICourseService";
-import { ICourseController } from "../interfaces/controllers/ICourseController";
 import {
   validateCourseCreation,
   validateCourseUpdate,
@@ -16,10 +12,9 @@ import { prisma } from "../lib/prisma";
 
 const router = Router();
 
-// Dependency injection with interfaces
-const courseRepository: ICourseRepository = new CourseRepository(prisma);
-const courseService: ICourseService = new CourseService(courseRepository);
-const courseController: ICourseController = new CourseController(courseService);
+// Simplified dependency injection
+const courseService = new CourseService(prisma);
+const courseController = new CourseController(courseService);
 
 router.post("/", validateCourseCreation, (req, res) =>
   courseController.createCourse(req, res)

@@ -22,19 +22,8 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Query key factory for consistent cache management (simplified)
+// Simple query keys - no need for complex factory pattern
 export const queryKeys = {
-  // Course-related query keys
-  courses: {
-    all: ["courses"] as const,
-    lists: () => [...queryKeys.courses.all, "list"] as const,
-    list: (userId: string) => [...queryKeys.courses.lists(), userId] as const,
-    details: () => [...queryKeys.courses.all, "detail"] as const,
-    detail: (id: string, userId: string) =>
-      [...queryKeys.courses.details(), id, userId] as const,
-  },
-
-  // Future: Add other domains here
-  // assignments: { ... },
-  // users: { ... },
+  courses: (userId: string) => ["courses", userId],
+  course: (id: string, userId: string) => ["course", id, userId],
 } as const;

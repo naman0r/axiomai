@@ -31,6 +31,8 @@ model User {
   updatedAt    DateTime @updatedAt
 
   @@map("users")
+  
+  CanvasIntegration CanvasIntegration[]
 }
 
 model Course {
@@ -45,4 +47,19 @@ model Course {
   updatedAt   DateTime @updatedAt
 
   @@map("courses")
+}
+
+
+// backend/prisma/schema.prisma
+model CanvasIntegration {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canvasUrl   String   // e.g., "https://school.instructure.com"
+  accessToken String   // encrypted token
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("canvas_integrations")
 }
