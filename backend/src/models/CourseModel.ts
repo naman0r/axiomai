@@ -14,6 +14,8 @@ export class Course implements ICourse {
   userId!: string;
   createdAt!: Date;
   updatedAt!: Date;
+  canvasCourseId!: string | null;
+  isFromCanvas!: boolean;
 
   constructor(data: PrismaCourse) {
     Object.assign(this, data);
@@ -29,6 +31,8 @@ export class Course implements ICourse {
       userId: data.userId,
       createdAt: new Date(),
       updatedAt: new Date(),
+      canvasCourseId: data.canvasCourseId || null,
+      isFromCanvas: data.isFromCanvas || false,
     });
   }
 
@@ -76,6 +80,10 @@ export class Course implements ICourse {
     if (updates.instructor) this.instructor = updates.instructor;
     if (updates.description !== undefined)
       this.description = updates.description;
+    if (updates.canvasCourseId !== undefined)
+      this.canvasCourseId = updates.canvasCourseId;
+    if (updates.isFromCanvas !== undefined)
+      this.isFromCanvas = updates.isFromCanvas;
     this.updatedAt = new Date();
   }
 
@@ -89,6 +97,8 @@ export class Course implements ICourse {
       userId: this.userId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      canvasCourseId: this.canvasCourseId,
+      isFromCanvas: this.isFromCanvas,
     };
   }
 
@@ -102,6 +112,8 @@ export class Course implements ICourse {
       userId: this.userId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      canvasCourseId: this.canvasCourseId,
+      isFromCanvas: this.isFromCanvas,
     };
   }
 }

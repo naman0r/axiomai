@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
 import courseRoutes from "./routes/CourseRoute";
+import canvasRoutes from "./routes/CanvasRoute";
 
 // load environment variables
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(
 
 // Routes
 app.use("/api/courses", courseRoutes);
+app.use("/api/canvas", canvasRoutes);
 
 // Debug endpoint to check environment
 app.get("/api/debug", (_req, res) => {

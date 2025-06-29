@@ -28,8 +28,10 @@ model User {
   courses      Course[]
   credits      Int      @default(20)
   createdAt    DateTime @default(now())
-  canvasUrl    String?
-  accessTokenHash  String?
+
+  // canvas integration
+  canvasDomain    String?  // northeastern.instructure.com
+  accessTokenHash  String?  // for now I am not hashing it, 
   isActive     Boolean  @default(false)
   updatedAt    DateTime @updatedAt
 
@@ -46,7 +48,39 @@ model Course {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+
   canvasCourseId String? // optional, provided by canvas.....
+  isFromCanvas Boolean @default(false)
 
   @@map("courses")
+  Tasks Tasks[]
+}
+
+
+model Tasks {
+  id String @id @default(cuid())
+  title String
+  description String? 
+  dueDate DateTime? 
+  pointsPossible Float? 
+  courseId String
+
+  // this kinda fucks shit up
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+
+
+  // canvas stuff: 
+  canvasAssignmentId String? 
+  canvasHtmlUrl String? 
+  isFromCanvas Boolean @default(false)
+
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  
+  @@map("tasks")
 }

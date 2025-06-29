@@ -14,6 +14,10 @@ export interface CreateCourseData {
   description?: string;
   /** The ID of the user who owns this course */
   userId: string;
+  /** Optional Canvas course ID for integration */
+  canvasCourseId?: string;
+  /** Whether this course is imported from Canvas */
+  isFromCanvas?: boolean;
 }
 
 /**
@@ -28,6 +32,10 @@ export interface UpdateCourseData {
   instructor?: string;
   /** Updated course description */
   description?: string;
+  /** Updated Canvas course ID */
+  canvasCourseId?: string;
+  /** Updated Canvas integration status */
+  isFromCanvas?: boolean;
 }
 
 /**
@@ -73,5 +81,7 @@ export interface ICourse extends PrismaCourse {
     userId: string;
     createdAt: Date;
     updatedAt: Date;
+    canvasCourseId: string | null;
+    isFromCanvas: boolean;
   };
 }
