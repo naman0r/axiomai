@@ -22,16 +22,28 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Query key factory for consistent cache management (simplified)
+// Query key factory for consistent cache management
 export const queryKeys = {
   // Course-related query keys
   courses: {
-    all: ["courses"] as const,
-    lists: () => [...queryKeys.courses.all, "list"] as const,
+    all: () => ["courses"] as const,
+    lists: () => [...queryKeys.courses.all(), "list"] as const,
     list: (userId: string) => [...queryKeys.courses.lists(), userId] as const,
-    details: () => [...queryKeys.courses.all, "detail"] as const,
+    details: () => [...queryKeys.courses.all(), "detail"] as const,
     detail: (id: string, userId: string) =>
       [...queryKeys.courses.details(), id, userId] as const,
+  },
+  // Canvas-related query keys
+  canvas: {
+    all: () => ["canvas"] as const,
+    status: () => [...queryKeys.canvas.all(), "status"] as const,
+    courses: () => [...queryKeys.canvas.all(), "courses"] as const,
+  },
+
+  // User-related query keys
+  user: {
+    all: () => ["user"] as const,
+    profile: () => [...queryKeys.user.all(), "profile"] as const,
   },
 
   // Future: Add other domains here

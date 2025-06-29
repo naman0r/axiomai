@@ -67,7 +67,7 @@ export class CanvasService implements ICanvasService {
         domain: userProfile.canvasDomain || undefined,
         lastSynced: userProfile.updatedAt,
       };
-    } catch (error) {
+    } catch {
       // Fallback if user profile doesn't exist
       return {
         isConnected: false,
