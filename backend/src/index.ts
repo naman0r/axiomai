@@ -1,10 +1,9 @@
-// what the helly?
-
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
-// import { requireAuth, optionalAuth } from "./middleware/auth"; // Commented out until Clerk is installed
+import courseRoutes from "./routes/CourseRoute";
+import canvasRoutes from "./routes/CanvasRoute";
 
 // load environment variables
 dotenv.config();
@@ -22,6 +21,10 @@ app.use(
     credentials: true, // Allow cookies/auth headers
   })
 );
+
+// Routes
+app.use("/api/courses", courseRoutes);
+app.use("/api/canvas", canvasRoutes);
 
 // Debug endpoint to check environment
 app.get("/api/debug", (_req, res) => {
@@ -66,11 +69,6 @@ app.get("/api/network-test", async (_req, res) => {
     });
   }
 });
-
-// example health-check
-/* app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
-}); */
 
 app.get("/api/health", async (_req, res) => {
   try {

@@ -34,9 +34,12 @@ function NavBar({ className }: { className?: string }) {
           <Link href="/">
             <MenuItem setActive={setActive} active={active} item="Home" />
           </Link>
+          <Link href="/about">
+            <MenuItem setActive={setActive} active={active} item="About" />
+          </Link>
           {isSignedIn ? (
             <>
-              <Link href="/hello">
+              <Link href="/dashboard">
                 <MenuItem
                   setActive={setActive}
                   active={active}
