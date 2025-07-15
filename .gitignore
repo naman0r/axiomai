@@ -6,3 +6,6 @@ frontend/.env
 backend/.env
 backend/dist
 frontend/.clerk
+.cursor/
+.vscode/
+

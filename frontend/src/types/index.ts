@@ -1,4 +1,7 @@
 export * from "./user";
+export * from "./api";
+export * from "./course";
+export * from "./canvas";
 
 // Add other type exports here if new files are created, e.g.:
 // export * from './exam';

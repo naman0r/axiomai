@@ -13,7 +13,7 @@ Auth: Clerk
 Backend: Express.js + TypeScript
 Frontend: Next.js + TypeScript + Tailwind
 Validation: Zod
-State Management: React Query + Zustand
+State Management: React Query + React State
 Testing: Jest
 
 - backend only approach (traditional): frontend remains 'dumb'
