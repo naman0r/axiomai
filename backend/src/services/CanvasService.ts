@@ -52,35 +52,49 @@ export class CanvasService implements ICanvasService {
   async fetchCanvasCourses(userId: string): Promise<CanvasCourse[]> {
     const credentials = await this.getCanvasCredentials(userId);
 
-    const courses: CanvasCourse[] = [];
     let url: string | null = `${credentials.domain}/api/v1/courses`;
-    let params: URLSearchParams | null = new URLSearchParams({
+    let params: any = {
       enrollment_state: "active",
-    });
+    };
 
-    // Handle pagination using RFC-5988 Link headers (just like the Python code)
+    const courses: CanvasCourse[] = [];
+
     while (url) {
-      const fullUrl = params ? `${url}?${params.toString()}` : url;
+      try {
+        const queryString = params
+          ? new URLSearchParams(params).toString()
+          : "";
+        const fullUrl = params ? `${url}?${queryString}` : url;
 
-      const response = await fetch(fullUrl, {
-        headers: {
-          Authorization: `Bearer ${credentials.accessToken}`,
-        },
-      });
+        const response = await fetch(fullUrl, {
+          headers: {
+            Authorization: `Bearer ${credentials.accessToken}`,
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error(
-          `Canvas API error: ${response.status} - ${response.statusText}`
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Canvas API error ${response.status}: ${errorText}`);
+          throw new Error(`Canvas API error: ${response.status}`);
+        }
+
+        const data = (await response.json()) as CanvasCourse[];
+        courses.push(...data);
+
+        // Handle pagination using RFC-5988 Link headers (like Flask code)
+        const nextUrl = this.parseNextLinkFromHeader(
+          response.headers.get("link")
+        );
+        url = nextUrl; // Will be null if no next page
+        params = null; // Critical: set to null after first iteration like Flask code
+      } catch (error) {
+        console.error("Error fetching Canvas courses:", error);
+        throw new NotFoundError(
+          `Failed to fetch Canvas courses: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
         );
       }
-
-      const pageData = (await response.json()) as CanvasCourse[];
-      courses.push(...pageData);
-
-      // Get next page URL from Link header (RFC-5988)
-      const linkHeader = response.headers.get("link");
-      url = this.parseNextLinkFromHeader(linkHeader);
-      params = null; // Only use params on first iteration
     }
 
     return courses;

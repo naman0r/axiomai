@@ -16,3 +16,5 @@ frontend/.clerk
 .env.local
 
 prompts.md
+
+docs/SECURITY.md
