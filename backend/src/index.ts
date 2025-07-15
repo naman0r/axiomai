@@ -9,7 +9,7 @@ import canvasRoutes from "./routes/CanvasRoute";
 dotenv.config();
 
 const app = express();
-const PORT = parseInt(process.env.PORT || "8000", 10);
+const PORT = parseInt(process.env.PORT!) || 3000;
 
 // Debug logging for Railway
 console.log("🔍 Environment Debug:");
@@ -160,8 +160,8 @@ app.post("/api/users", async (req, res) => {
   const {} = req.body;
 });
 
-const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Backend running on http://0.0.0.0:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
   console.log(`📡 Server address:`, server.address());
 });
 
