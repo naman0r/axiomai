@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { courseService } from "../services";
+import { courseService } from "../services"; // small c, means the instance of CourseService....
 import { queryKeys } from "../lib/query-client";
 import { Course, CreateCourseData, UpdateCourseData } from "../types/course";
 

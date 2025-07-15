@@ -17,7 +17,10 @@ export interface IApiClient {
 class ApiClient implements IApiClient {
   private client: AxiosInstance;
 
-  constructor(baseURL: string = "http://localhost:8000") {
+  // so we just have to change the api url in one place, here, and everything is taken care of.... so cool....
+  constructor(
+    baseURL: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+  ) {
     this.client = axios.create({
       baseURL,
       headers: {

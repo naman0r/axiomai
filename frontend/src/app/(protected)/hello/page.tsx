@@ -1,11 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useCourses } from "@/hooks/useCourses";
+import * as cowsay from "cowsay";
 
 const Page = () => {
   const { isLoaded, userId } = useAuth();
   const { data: courses } = useCourses(userId || "");
+
+  useEffect(() => {
+    console.log(cowsay.say({ text: "Hello, world!" }));
+  }, []);
 
   if (!isLoaded) {
     return <div>Loading...</div>;
