@@ -52,20 +52,53 @@ export class CanvasService implements ICanvasService {
   async fetchCanvasCourses(userId: string): Promise<CanvasCourse[]> {
     const credentials = await this.getCanvasCredentials(userId);
 
-    const response = await fetch(
-      `${credentials.domain}/api/v1/courses?enrollment_state=active`,
-      {
+    const courses: CanvasCourse[] = [];
+    let url: string | null = `${credentials.domain}/api/v1/courses`;
+    let params: URLSearchParams | null = new URLSearchParams({
+      enrollment_state: "active",
+    });
+
+    // Handle pagination using RFC-5988 Link headers (just like the Python code)
+    while (url) {
+      const fullUrl = params ? `${url}?${params.toString()}` : url;
+
+      const response = await fetch(fullUrl, {
         headers: {
           Authorization: `Bearer ${credentials.accessToken}`,
         },
-      }
-    );
+      });
 
-    if (!response.ok) {
-      throw new Error(`Canvas API error: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(
+          `Canvas API error: ${response.status} - ${response.statusText}`
+        );
+      }
+
+      const pageData = (await response.json()) as CanvasCourse[];
+      courses.push(...pageData);
+
+      // Get next page URL from Link header (RFC-5988)
+      const linkHeader = response.headers.get("link");
+      url = this.parseNextLinkFromHeader(linkHeader);
+      params = null; // Only use params on first iteration
     }
 
-    return (await response.json()) as CanvasCourse[];
+    return courses;
+  }
+
+  // Helper method to parse RFC-5988 Link header for pagination
+  private parseNextLinkFromHeader(linkHeader: string | null): string | null {
+    if (!linkHeader) return null;
+
+    // Link header format: <https://canvas.example.com/api/v1/courses?page=2>; rel="next"
+    const links = linkHeader.split(",");
+    for (const link of links) {
+      const [url, rel] = link.trim().split(";");
+      if (rel && rel.includes('rel="next"')) {
+        return url.trim().slice(1, -1); // Remove < and > brackets
+      }
+    }
+    return null;
   }
 
   async importCanvasCourses(
@@ -77,19 +110,82 @@ export class CanvasService implements ICanvasService {
       courseIds.includes(course.id)
     );
 
-    const importedCourses = [];
-    for (const canvasCourse of coursesToImport) {
-      const courseData = {
-        name: canvasCourse.name,
-        code: canvasCourse.course_code,
-        instructor: "Canvas Import", // We'd need to fetch instructor from Canvas
-        userId,
-        canvasCourseId: canvasCourse.id.toString(), // Convert Canvas ID to string
-        isFromCanvas: true,
-      };
+    // Get existing courses to check for duplicates
+    const existingCourses = await this.courseService.getUserCourses(userId);
+    const existingCanvasIds = new Set(
+      existingCourses
+        .filter((course) => course.canvasCourseId)
+        .map((course) => course.canvasCourseId)
+    );
 
-      const course = await this.courseService.createCourse(courseData);
-      importedCourses.push(course);
+    const importedCourses = [];
+    const skippedCourses = [];
+    const errors = [];
+
+    for (const canvasCourse of coursesToImport) {
+      const canvasIdString = canvasCourse.id.toString();
+
+      // Check if course is already imported
+      if (existingCanvasIds.has(canvasIdString)) {
+        skippedCourses.push({
+          name: canvasCourse.name,
+          code: canvasCourse.course_code,
+          reason: "Already imported",
+        });
+        continue;
+      }
+
+      try {
+        const courseData = {
+          name: canvasCourse.name,
+          code: canvasCourse.course_code,
+          instructor: "Canvas Import", // We'd need to fetch instructor from Canvas
+          userId,
+          canvasCourseId: canvasIdString,
+          isFromCanvas: true,
+        };
+
+        const course = await this.courseService.createCourse(courseData);
+        importedCourses.push(course);
+      } catch (error) {
+        console.error(`Failed to import course ${canvasCourse.name}:`, error);
+        errors.push({
+          name: canvasCourse.name,
+          code: canvasCourse.course_code,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // If we have skipped courses or errors, include that information
+    if (skippedCourses.length > 0 || errors.length > 0) {
+      const message = [];
+      if (importedCourses.length > 0) {
+        message.push(
+          `Successfully imported ${importedCourses.length} course${
+            importedCourses.length !== 1 ? "s" : ""
+          }.`
+        );
+      }
+      if (skippedCourses.length > 0) {
+        message.push(
+          `Skipped ${skippedCourses.length} already imported course${
+            skippedCourses.length !== 1 ? "s" : ""
+          }.`
+        );
+      }
+      if (errors.length > 0) {
+        message.push(
+          `Failed to import ${errors.length} course${
+            errors.length !== 1 ? "s" : ""
+          }.`
+        );
+      }
+
+      // Throw an error with details if there were issues, but don't fail completely
+      if (importedCourses.length === 0) {
+        throw new Error(message.join(" ") + " No new courses were imported.");
+      }
     }
 
     return importedCourses;
