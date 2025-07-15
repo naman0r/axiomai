@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
-// import courseRoutes from "./routes/CourseRoute";
-// import canvasRoutes from "./routes/CanvasRoute";
+import courseRoutes from "./routes/CourseRoute";
+import canvasRoutes from "./routes/CanvasRoute";
 
 // load environment variables
 dotenv.config();
@@ -34,9 +34,9 @@ app.get("/", (req, res) => {
   res.json({ status: "OK", message: "Backend is running!" });
 });
 
-// Routes (temporarily disabled for debugging)
-// app.use("/api/courses", courseRoutes);
-// app.use("/api/canvas", canvasRoutes);
+// Routes
+app.use("/api/courses", courseRoutes);
+app.use("/api/canvas", canvasRoutes);
 
 // Debug endpoint to check environment
 app.get("/api/debug", (_req, res) => {
