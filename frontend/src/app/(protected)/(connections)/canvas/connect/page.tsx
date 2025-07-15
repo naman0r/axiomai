@@ -250,7 +250,7 @@ export default function ConnectCanvasPage() {
                 </p>
               )}
               <p className="mt-2 text-xs text-gray-500">
-                Do not include "https://" or trailing slashes
+                Do not include &quot;https://&quot; or trailing slashes
               </p>
             </div>
 

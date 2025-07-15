@@ -8,6 +8,7 @@ import {
 import { useUserSync } from "@/hooks/useUserSync";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // Academic levels for select dropdown
 const academicLevels = [
@@ -189,9 +190,11 @@ export default function ProfilePage() {
                 <div className="text-center">
                   <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     {user.imageUrl ? (
-                      <img
+                      <Image
                         src={user.imageUrl}
                         alt="Profile"
+                        width={96}
+                        height={96}
                         className="w-24 h-24 rounded-full object-cover"
                       />
                     ) : (

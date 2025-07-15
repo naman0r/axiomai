@@ -98,7 +98,7 @@ export class CanvasService implements ICanvasService {
     } catch (error) {
       // If fetching courses fails, check if it's because Canvas isn't connected
       // or if there's another issue
-      const apiError = error as any;
+      const apiError = error as { status?: number; message?: string };
 
       if (
         apiError?.status === 404 ||
@@ -123,26 +123,39 @@ export class CanvasService implements ICanvasService {
    * @param defaultMessage - Default message to use if error parsing fails
    * @returns A CanvasError object
    */
-  private handleCanvasError(error: any, defaultMessage: string): CanvasError {
+  private handleCanvasError(
+    error: unknown,
+    defaultMessage: string
+  ): CanvasError {
+    // Type cast error to handle API error structure
+    const apiError = error as {
+      response?: {
+        data?: { message?: string; details?: string };
+        status?: number;
+        statusText?: string;
+      };
+      message?: string;
+    };
+
     // Extract meaningful error information
-    if (error?.response?.data?.message) {
+    if (apiError?.response?.data?.message) {
       return {
-        message: error.response.data.message,
-        status: error.response.status,
-        details: error.response.data.details || error.response.statusText,
+        message: apiError.response.data.message,
+        status: apiError.response.status,
+        details: apiError.response.data.details || apiError.response.statusText,
       };
     }
 
-    if (error?.message) {
+    if (apiError?.message) {
       return {
-        message: error.message,
-        status: error?.response?.status,
+        message: apiError.message,
+        status: apiError?.response?.status,
       };
     }
 
     return {
       message: defaultMessage,
-      status: error?.response?.status || 500,
+      status: apiError?.response?.status || 500,
     };
   }
 }

@@ -304,7 +304,7 @@ export default function ConfigureCanvasPage() {
               Failed to Load Courses
             </h3>
             <p className="text-red-200 mb-4">
-              We couldn't fetch your Canvas courses. Please check your
+              We couldn&apos;t fetch your Canvas courses. Please check your
               connection and try again.
             </p>
             <button
@@ -450,7 +450,7 @@ export default function ConfigureCanvasPage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">No Courses Found</h3>
             <p className="text-gray-400 mb-6">
-              We couldn't find any active courses in your Canvas account.
+              We couldn&apos;t find any active courses in your Canvas account.
             </p>
             <div className="flex gap-4 justify-center">
               <button
