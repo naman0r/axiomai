@@ -53,8 +53,8 @@ export class Course implements ICourse {
     if (!this.code?.trim()) {
       errors.push("Course code is required");
     }
-    if (this.code && this.code.length > 20) {
-      errors.push("Course code must be 20 characters or less");
+    if (this.code && this.code.length > 100) {
+      errors.push("Course code must be 100 characters or less");
     }
 
     if (!this.instructor?.trim()) {
