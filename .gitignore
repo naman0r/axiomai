@@ -9,3 +9,9 @@ frontend/.clerk
 .cursor/
 .vscode/
 
+# OS-specific
+.DS_Store
+
+# Environment files
+.env.local
+
