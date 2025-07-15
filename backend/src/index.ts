@@ -22,7 +22,11 @@ console.log("RAILWAY_ENVIRONMENT:", process.env.RAILWAY_ENVIRONMENT);
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://axiomai.space"], // Allowed origins
+    origin: [
+      "http://localhost:3000",
+      "https://axiomai.space",
+      "https://www.axiomai.space",
+    ], // Allowed origins
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
     credentials: true, // Allow cookies/auth headers
