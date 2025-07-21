@@ -9,6 +9,7 @@ import { useUserSync } from "@/hooks/useUserSync";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useDisconnectCanvas } from "@/hooks/useCanvas";
 
 // Academic levels for select dropdown
 const academicLevels = [
@@ -20,6 +21,7 @@ const academicLevels = [
 ];
 
 export default function ProfilePage() {
+  const discconnectCanvasMutation = useDisconnectCanvas();
   const { user, isLoaded } = useUser();
   const {
     isLoading: isSyncing,

@@ -119,7 +119,7 @@ export class CanvasController {
   async disconnectCanvas(req: Request, res: Response): Promise<void> {
     try {
       // TODO: Add proper Clerk authentication middleware
-      const userId = req.user?.id || "test-user-123";
+      const userId = req.user?.id || "null, invalid client request";
 
       await this.canvasService.disconnectCanvas(userId); // this is cool, just calling the service, and dont have to do any
       // of the logic here. Controller should be kept bare. Interracting between Service and Route. Service is liek the model, and

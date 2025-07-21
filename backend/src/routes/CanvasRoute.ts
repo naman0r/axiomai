@@ -18,6 +18,7 @@ const canvasController = new CanvasController(canvasService);
 const router = Router();
 
 router.post("/connect", (req, res) => canvasController.connectCanvas(req, res));
+
 router.delete("/disconnect", (req, res) =>
   canvasController.disconnectCanvas(req, res)
 );
