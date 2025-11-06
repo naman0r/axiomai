@@ -13,4 +13,7 @@ export interface ICanvasService {
   fetchCanvasCourses(): Promise<CanvasCourse[]>;
   importCanvasCourses(data: ImportCanvasCoursesData): Promise<Course[]>;
   getCanvasStatus(): Promise<CanvasConnection>;
+  isConnected(
+    actualUserId?: string
+  ): Promise<{ isConnected: boolean; canvasDomain?: string }>;
 }
