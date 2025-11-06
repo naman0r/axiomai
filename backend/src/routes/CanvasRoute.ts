@@ -29,4 +29,8 @@ router.post("/import-courses", (req, res) =>
   canvasController.importCourses(req, res)
 );
 
+router.get("/is-connected", (req, res) =>
+  canvasController.isConnected(req, res)
+);
+
 export default router;
