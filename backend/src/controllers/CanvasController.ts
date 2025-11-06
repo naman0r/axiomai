@@ -5,6 +5,38 @@ import { prisma } from "../lib/prisma";
 export class CanvasController {
   constructor(private canvasService: ICanvasService) {}
 
+  async isConnected(req: Request, res: Response): Promise<void> {
+    try {
+      // TODO: Add proper Clerk authentication middleware
+      const userId = req.user?.id || "test-user-123";
+
+      // Query user to check for Canvas credentials
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          canvasDomain: true,
+          accessTokenHash: true,
+        },
+      });
+
+      // Check if both Canvas credentials exist
+      const isConnected = !!(user?.canvasDomain && user?.accessTokenHash);
+
+      res.json({
+        isConnected,
+        canvasDomain: isConnected ? user.canvasDomain : null,
+      });
+    } catch (error) {
+      console.error("Canvas connection check error:", error);
+      res.status(500).json({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to check Canvas connection",
+      });
+    }
+  }
+
   async connectCanvas(req: Request, res: Response): Promise<void> {
     try {
       const { domain, accessToken, actualUserId } = req.body;
@@ -42,7 +74,9 @@ export class CanvasController {
   async getCanvasCourses(req: Request, res: Response): Promise<void> {
     try {
       // TODO: Add proper Clerk authentication middleware
-      const userId = req.user?.id || "test-user-123";
+      // Support explicit user id via query param until auth middleware is added
+      const explicitUserId = (req.query.actualUserId as string) || undefined;
+      const userId = explicitUserId || req.user?.id || "test-user-123";
 
       const courses = await this.canvasService.fetchCanvasCourses(userId);
       res.json(courses);
@@ -119,7 +153,7 @@ export class CanvasController {
   async disconnectCanvas(req: Request, res: Response): Promise<void> {
     try {
       // TODO: Add proper Clerk authentication middleware
-      const userId = req.user?.id || "test-user-123";
+      const userId = req.user?.id || "null, invalid client request";
 
       await this.canvasService.disconnectCanvas(userId); // this is cool, just calling the service, and dont have to do any
       // of the logic here. Controller should be kept bare. Interracting between Service and Route. Service is liek the model, and

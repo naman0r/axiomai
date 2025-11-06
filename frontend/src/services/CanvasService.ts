@@ -51,11 +51,12 @@ export class CanvasService implements ICanvasService {
    * Fetches the list of courses from Canvas
    * @returns A promise that resolves with the list of courses
    */
-  async fetchCanvasCourses(): Promise<CanvasCourse[]> {
+  async fetchCanvasCourses(actualUserId?: string): Promise<CanvasCourse[]> {
     try {
-      const response = await this.apiClient.get<CanvasCourse[]>(
-        "/api/canvas/courses"
-      );
+      const endpoint = actualUserId
+        ? `/api/canvas/courses?actualUserId=${encodeURIComponent(actualUserId)}`
+        : "/api/canvas/courses";
+      const response = await this.apiClient.get<CanvasCourse[]>(endpoint);
       return response;
     } catch (error) {
       console.error("Failed to fetch Canvas courses:", error);
@@ -114,6 +115,31 @@ export class CanvasService implements ICanvasService {
         isConnected: true,
         lastSynced: undefined, // Unknown last sync time
       };
+    }
+  }
+
+  /**
+   * Checks if Canvas is connected by verifying stored credentials
+   * @returns A promise that resolves with the connection status
+   */
+  async isConnected(actualUserId?: string): Promise<{
+    isConnected: boolean;
+    canvasDomain?: string;
+  }> {
+    try {
+      const endpoint = actualUserId
+        ? `/api/canvas/is-connected?actualUserId=${encodeURIComponent(
+            actualUserId
+          )}`
+        : "/api/canvas/is-connected";
+      const response = await this.apiClient.get<{
+        isConnected: boolean;
+        canvasDomain?: string;
+      }>(endpoint);
+      return response;
+    } catch (error) {
+      console.error("Failed to check Canvas connection:", error);
+      throw this.handleCanvasError(error, "Failed to check Canvas connection");
     }
   }
 

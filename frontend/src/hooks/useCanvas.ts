@@ -1,8 +1,10 @@
+"use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { canvasService } from "../services";
 import { queryKeys } from "../lib/query-client";
 import { ConnectCanvasData, ImportCanvasCoursesData } from "../types/canvas";
 import { Course } from "../types/course";
+import { useUser } from "@clerk/nextjs";
 
 /**
  * Get Canvas connection status
@@ -77,11 +79,12 @@ export function useDisconnectCanvas() {
  * Gets list of courses from Canvas (only when explicitly called)
  */
 export function useCanvasCourses() {
+  const { user } = useUser();
   return useQuery({
     queryKey: queryKeys.canvas.courses(),
     queryFn: () => {
       console.log("Fetching Canvas courses...");
-      return canvasService.fetchCanvasCourses();
+      return canvasService.fetchCanvasCourses(user?.id);
     },
     enabled: false, // Only fetch when explicitly triggered
     staleTime: 10 * 60 * 1000, // Canvas courses fresh for 10 minutes
@@ -128,4 +131,14 @@ export function usePrefetchCanvasCourses() {
       staleTime: 10 * 60 * 1000,
     });
   };
+}
+
+export function useIsConnected() {
+  const { user } = useUser();
+  return useQuery({
+    queryKey: [...queryKeys.canvas.isConnected(), user?.id ?? "anon"],
+    queryFn: () => canvasService.isConnected(user?.id),
+    staleTime: 5 * 60 * 1000, // Connection status fresh for 5 minutes
+    retry: 1, // Only retry once if it fails
+  });
 }

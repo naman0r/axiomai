@@ -38,6 +38,7 @@ export const queryKeys = {
     all: () => ["canvas"] as const,
     status: () => [...queryKeys.canvas.all(), "status"] as const,
     courses: () => [...queryKeys.canvas.all(), "courses"] as const,
+    isConnected: () => [...queryKeys.canvas.all(), "isConnected"] as const,
   },
 
   // User-related query keys

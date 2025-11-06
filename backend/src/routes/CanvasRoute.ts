@@ -18,6 +18,7 @@ const canvasController = new CanvasController(canvasService);
 const router = Router();
 
 router.post("/connect", (req, res) => canvasController.connectCanvas(req, res));
+
 router.delete("/disconnect", (req, res) =>
   canvasController.disconnectCanvas(req, res)
 );
@@ -26,6 +27,10 @@ router.get("/courses", (req, res) =>
 );
 router.post("/import-courses", (req, res) =>
   canvasController.importCourses(req, res)
+);
+
+router.get("/is-connected", (req, res) =>
+  canvasController.isConnected(req, res)
 );
 
 export default router;

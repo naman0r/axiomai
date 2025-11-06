@@ -32,7 +32,7 @@ model User {
 
   // canvas integration
   canvasDomain    String?  // northeastern.instructure.com
-  accessTokenHash  String?  // for now I am not hashing it, 
+  accessTokenHash  String?  // NEED TO HASH ASAP!!!
   isActive     Boolean  @default(false)
   updatedAt    DateTime @updatedAt
 
